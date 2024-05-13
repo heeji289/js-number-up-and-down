@@ -33,17 +33,33 @@ const MAX_CHANCE = 5;
 
 async function play() {
   let chance = MAX_CHANCE; // 남은 기회를 나타내는 변수
-  const log = []; // 사용자 입력을 저장하는 배열
-  const answer = determineAnswer();
-
-  console.log('컴퓨터가 1~50 사이의 숫자를 선택했습니다. 숫자를 맞춰보세요.');
+  let log = []; // 사용자 입력을 저장하는 배열
+  let answer = 0;
 
   while (true) {
+    if (chance === MAX_CHANCE) {
+      // 게임 시작
+      log = [];
+      answer = determineAnswer();
+      console.log(
+        '컴퓨터가 1~50 사이의 숫자를 선택했습니다. 숫자를 맞춰보세요.'
+      );
+    }
+
     chance--;
 
     if (chance < 0) {
       console.log(`5회 초과! 숫자를 맞추지 못했습니다. (정답: ${answer})`);
-      break; // 재시작 여부 추가 필요
+      const isRestart = await readLineAsync(
+        '게임을 다시 시작하시겠습니까? (yes/no):'
+      );
+
+      if (isRestart === 'yes') {
+        chance = MAX_CHANCE;
+        continue;
+      } else {
+        break;
+      }
     }
 
     const userInput = await readLineAsync('숫자 입력:');
@@ -55,8 +71,17 @@ async function play() {
 
     if (userInputNumber === answer) {
       console.log(`정답!
-      축하합니다! ${log.length}번 만에 숫자를 맞추셨습니다.`);
-      break; // 재시작 여부 추가 필요
+축하합니다! ${log.length}번 만에 숫자를 맞추셨습니다.`);
+      const isRestart = await readLineAsync(
+        '게임을 다시 시작하시겠습니까? (yes/no):'
+      );
+
+      if (isRestart === 'yes') {
+        chance = MAX_CHANCE;
+        continue;
+      } else {
+        break;
+      }
     }
 
     if (userInputNumber > answer) {
