@@ -1,5 +1,7 @@
 import readline from 'readline';
 
+const MAX_CHANCE = 5;
+
 function readLineAsync(query) {
   return new Promise((resolve, reject) => {
     if (arguments.length !== 1) {
@@ -25,22 +27,32 @@ function readLineAsync(query) {
 /**
  * 1~50 사이 랜덤 숫자 생성
  */
-function determineAnswer() {
+function getRandomNumber() {
   return Math.floor(Math.random() * 50);
 }
 
-const MAX_CHANCE = 5;
+async function restartGame() {
+  const isRestart = await readLineAsync(
+    '게임을 다시 시작하시겠습니까? (yes/no): '
+  );
+  if (isRestart.toLowerCase() === 'yes') {
+    return true;
+  } else {
+    console.log('게임을 종료합니다.');
+    return false;
+  }
+}
 
 async function play() {
   let chance = MAX_CHANCE; // 남은 기회를 나타내는 변수
-  let log = []; // 사용자 입력을 저장하는 배열
-  let answer = 0;
+  let log; // 사용자 입력을 저장하는 배열
+  let answer;
 
   while (true) {
     if (chance === MAX_CHANCE) {
-      // 게임 시작
+      // 변수 초기화
       log = [];
-      answer = determineAnswer();
+      answer = getRandomNumber();
       console.log(
         '컴퓨터가 1~50 사이의 숫자를 선택했습니다. 숫자를 맞춰보세요.'
       );
@@ -50,16 +62,11 @@ async function play() {
 
     if (chance < 0) {
       console.log(`5회 초과! 숫자를 맞추지 못했습니다. (정답: ${answer})`);
-      const isRestart = await readLineAsync(
-        '게임을 다시 시작하시겠습니까? (yes/no):'
-      );
 
-      if (isRestart === 'yes') {
+      if (await restartGame()) {
         chance = MAX_CHANCE;
         continue;
-      } else {
-        break;
-      }
+      } else break;
     }
 
     const userInput = await readLineAsync('숫자 입력:');
@@ -72,16 +79,10 @@ async function play() {
     if (userInputNumber === answer) {
       console.log(`정답!
 축하합니다! ${log.length}번 만에 숫자를 맞추셨습니다.`);
-      const isRestart = await readLineAsync(
-        '게임을 다시 시작하시겠습니까? (yes/no):'
-      );
-
-      if (isRestart === 'yes') {
+      if (await restartGame()) {
         chance = MAX_CHANCE;
         continue;
-      } else {
-        break;
-      }
+      } else break;
     }
 
     if (userInputNumber > answer) {
