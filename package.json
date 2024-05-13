@@ -7,10 +7,10 @@
   "author": "",
   "license": "MIT",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "yarn build --watch",
-    "build": "esbuild src/index.js --bundle --outdir=dist",
+    "build": "esbuild src/index.js --bundle --outdir=dist --platform=node",
     "start": "node dist/index.js"
   },
   "devDependencies": {
