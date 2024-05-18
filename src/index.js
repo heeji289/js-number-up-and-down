@@ -29,59 +29,71 @@ function getRandomNumber() {
 }
 
 async function getUserInput(promt) {
-  const input = await readLineAsync(promt);
-  // 유효성 검사
-  return Number(input);
+  while (true) {
+    const input = await readLineAsync(promt);
+    const inputNumber = Number(input);
+
+    if (!isNaN(inputNumber) && inputNumber >= 1 && inputNumber <= 50) {
+      return inputNumber;
+    }
+
+    console.log('유효한 숫자를 입력해주세요 (1-50)');
+  }
 }
 
-function initGame() {
-  const answer = getRandomNumber();
-  let guessLog = [];
-  let attemptCount = 0;
-
-  console.log('컴퓨터가 1~50 사이의 숫자를 선택했습니다. 숫자를 맞춰보세요.');
-
-  return { answer, guessLog, attemptCount };
-}
-
-async function restartGame() {
+async function askRestartGame() {
   const isRestartGame = await readLineAsync(
     '게임을 다시 시작하시겠습니까? (yes/no): '
   );
 
-  if (isRestartGame === 'no') {
-    console.log('게임을 종료합니다.');
-    return;
-  }
-
-  playGame();
+  return isRestartGame === 'yes';
 }
 
-async function playGame() {
-  let { answer, guessLog, attemptCount } = initGame();
+// ***********************************************
 
-  while (attemptCount < MAX_CHANCE) {
-    const userInput = await getUserInput('숫자 입력: ');
-    attemptCount++;
-    guessLog.push(userInput);
+function createGame() {
+  // 게임 생성 및 초기화
+  const answer = getRandomNumber();
+  const guessLog = [];
+  let attemptCount = 0;
 
-    if (userInput === answer) {
-      console.log(
-        `정답!축하합니다! ${attemptCount}번 만에 숫자를 맞추셨습니다.`
-      );
-      break;
+  console.log('컴퓨터가 1~50 사이의 숫자를 선택했습니다. 숫자를 맞춰보세요.');
+
+  async function play() {
+    while (attemptCount < MAX_CHANCE) {
+      const userInput = await getUserInput('숫자 입력: ');
+      attemptCount++;
+      guessLog.push(userInput);
+
+      if (userInput === answer) {
+        console.log(
+          `정답! 축하합니다! ${attemptCount}번 만에 숫자를 맞추셨습니다.`
+        );
+        return;
+      }
+
+      console.log(userInput < answer ? '업' : '다운');
+      console.log(`이전 추측: ${guessLog.join(' ')}\n`);
     }
 
-    console.log(userInput < answer ? '업' : '다운');
-    console.log(`이전 추측: ${guessLog.join(' ')}\n`);
+    console.log(
+      `${MAX_CHANCE}회 초과! 숫자를 맞추지 못했습니다. (정답: ${answer})`
+    );
   }
 
-  if (attemptCount === 5) {
-    console.log(`5회 초과! 숫자를 맞추지 못했습니다. (정답: ${answer})`);
-  }
-
-  // 정답이거나 회수를 모두 소진하여 재시작
-  restartGame();
+  return { play };
 }
 
-playGame();
+async function main() {
+  let continueGame = true;
+
+  while (continueGame) {
+    const game = createGame();
+    await game.play();
+    continueGame = await askRestartGame();
+  }
+
+  console.log('게임을 종료합니다.');
+}
+
+main();
