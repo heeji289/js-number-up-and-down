@@ -7,9 +7,11 @@ export default class GameView {
     let continueGame = true;
 
     while (continueGame) {
-      const game = new Game(1, 50, 5);
+      const config = await this.getGameConfig();
+      const game = new Game(config);
+
       console.log(
-        '컴퓨터가 1~50 사이의 숫자를 선택했습니다. 숫자를 맞춰보세요.'
+        `컴퓨터가 ${config.min}~${config.max} 사이의 숫자를 선택했습니다. 숫자를 맞춰보세요.`
       );
       await this.playGame(game);
 
@@ -17,6 +19,21 @@ export default class GameView {
     }
 
     console.log(Messages.END);
+  }
+
+  async getGameConfig() {
+    const [min, max] = (
+      await readLineAsync(`[게임 설정] 게임 시작을 위해 최소 값, 최대 값을 입력해주세요. (예: 1, 50)
+숫자 입력:`)
+    )
+      .trim()
+      .split(',');
+
+    const chance =
+      await readLineAsync(`[게임 설정] 게임 시작을 위해 진행 가능 횟수를 입력해주세요.
+숫자 입력:`);
+
+    return { min: Number(min), max: Number(max), chance: Number(chance) };
   }
 
   async getUserInput(min, max) {
@@ -34,13 +51,12 @@ export default class GameView {
 
   async askRestartGame() {
     const isRestartGame = await readLineAsync(Messages.RESTART);
-
     return isRestartGame === 'yes';
   }
 
   async playGame(game) {
     while (game.attemptCount < game.chance) {
-      const userInput = await this.getUserInput(1, 50);
+      const userInput = await this.getUserInput(game.min, game.max);
       const result = game.playRound(userInput);
 
       if (result === Status.SUCCESS) {

@@ -9,7 +9,7 @@ export default class Game {
   #max;
   #chance;
 
-  constructor(min, max, chance) {
+  constructor({ min, max, chance }) {
     this.#answer = getRandomNumber(min, max);
 
     this.#min = min;
@@ -42,5 +42,13 @@ export default class Game {
 
   get answer() {
     return this.#answer;
+  }
+
+  get min() {
+    return this.#min;
+  }
+
+  get max() {
+    return this.#max;
   }
 }
