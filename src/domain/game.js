@@ -1,9 +1,10 @@
+import { Status } from '../constants';
 import { getRandomNumber } from '../utils';
 
 export default class Game {
   #answer;
-  #guessLog = [];
-  #attemptCount = 0;
+  #guessLog;
+  #attemptCount;
 
   #min;
   #max;
@@ -11,6 +12,8 @@ export default class Game {
 
   constructor({ min, max, chance }) {
     this.#answer = getRandomNumber(min, max);
+    this.#guessLog = [];
+    this.#attemptCount = 0;
 
     this.#min = min;
     this.#max = max;
@@ -22,10 +25,10 @@ export default class Game {
     this.#guessLog.push(userInputNumber);
 
     if (userInputNumber === this.#answer) {
-      return 'success';
+      return Status.SUCCESS;
     }
 
-    return userInputNumber < this.#answer ? 'up' : 'down';
+    return userInputNumber < this.#answer ? Status.UP : Status.DOWN;
   }
 
   get attemptCount() {
