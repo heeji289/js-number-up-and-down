@@ -1,6 +1,6 @@
 import { readLineAsync, getRandomNumber } from '../utils';
 import Game from '../domain/game';
-import { Messages, Status } from '../constants';
+import { Status } from '../constants';
 
 export default class GameView {
   async start() {
@@ -18,22 +18,44 @@ export default class GameView {
       continueGame = await this.askRestartGame();
     }
 
-    console.log(Messages.END);
+    console.log('게임을 종료합니다.');
   }
 
   async getGameConfig() {
-    const [min, max] = (
-      await readLineAsync(`[게임 설정] 게임 시작을 위해 최소 값, 최대 값을 입력해주세요. (예: 1, 50)
-숫자 입력:`)
-    )
-      .trim()
-      .split(',');
+    let min, max, chance;
+    let readlineQuery = `[게임 설정] 게임 시작을 위해 최소 값, 최대 값을 입력해주세요. (예: 1, 50)
+숫자 입력:`;
 
-    const chance =
-      await readLineAsync(`[게임 설정] 게임 시작을 위해 진행 가능 횟수를 입력해주세요.
-숫자 입력:`);
+    while (true) {
+      const input = await readLineAsync(readlineQuery);
 
-    return { min: Number(min), max: Number(max), chance: Number(chance) };
+      [min, max] = input.trim().split(',').map(Number);
+
+      if (!isNaN(min) && !isNaN(max) && min < max) {
+        break;
+      }
+
+      readlineQuery = `⛔️ 잘못 입력 하셨습니다.
+      유효한 최소 값과 최대 값을 입력해주세요. (예: 1, 50)`;
+    }
+
+    readlineQuery = `[게임 설정] 게임 시작을 위해 진행 가능 횟수를 입력해주세요.
+숫자 입력:`;
+
+    while (true) {
+      const input = await readLineAsync(readlineQuery);
+
+      chance = Number(input);
+
+      if (!isNaN(chance) && chance > 0) {
+        break;
+      }
+
+      readlineQuery = `⛔️ 잘못 입력 하셨습니다.
+유효한 진행 가능 횟수를 입력해주세요. (예: 5)`;
+    }
+
+    return { min, max, chance };
   }
 
   async getUserInput(min, max) {
@@ -45,12 +67,14 @@ export default class GameView {
         return inputNumber;
       }
 
-      console.log(`${Messages.INPUT_ERROR} (${min}-${max})`);
+      console.log(`'유효한 숫자를 입력해주세요' (${min}-${max})`);
     }
   }
 
   async askRestartGame() {
-    const isRestartGame = await readLineAsync(Messages.RESTART);
+    const isRestartGame = await readLineAsync(
+      '게임을 다시 시작하시겠습니까? (yes/no): '
+    );
     return isRestartGame === 'yes';
   }
 
@@ -66,7 +90,7 @@ export default class GameView {
         return;
       }
 
-      console.log(result === Status.UP ? Messages.UP : Messages.DOWN);
+      console.log(result === Status.UP ? '업' : '다운');
       console.log(`이전 추측: ${game.guessLog.join(' ')}\n`);
     }
 
