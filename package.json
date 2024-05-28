@@ -10,7 +10,7 @@
   "type": "commonjs",
   "scripts": {
     "dev": "yarn build --watch",
-    "build": "esbuild src/index.js --bundle --outdir=dist --platform=node",
+    "build": "esbuild src/index.js --bundle --outdir=dist",
     "start": "node dist/index.js",
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest --watch"
   },
