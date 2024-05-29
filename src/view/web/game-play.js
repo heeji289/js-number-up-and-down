@@ -30,8 +30,8 @@ export default class GamePlayView {
     ];
 
     this.render();
-    this.rerenderLog();
-    this.rerenderRemainChance();
+    this.renderLog();
+    this.renderRemainChance();
     this.addEvent();
   }
 
@@ -51,14 +51,14 @@ export default class GamePlayView {
       const result = this.#game.playRound(userInput);
       this.#log = [...this.#log, `[유저] ${userInput}`];
 
-      this.rerenderRemainChance();
-      this.rerenderInputLog();
+      this.renderRemainChance();
+      this.renderInputLog();
 
       $userInput.value = ''; // input 초기화
 
       if (result === Status.SUCCESS) {
         this.#log = [...this.#log, '[컴퓨터] 정답을 맞추셨습니다. 🎉'];
-        this.rerenderLog();
+        this.renderLog();
         $userInput.disabled = true;
         return;
       }
@@ -66,7 +66,7 @@ export default class GamePlayView {
       //이 때! 정답이 아니면 게임이 실패한 것임
       if (this.#game.attemptCount >= this.#game.chance) {
         this.#log = [...this.#log, '[컴퓨터] 기회를 모두 소진했습니다. 끝! 💣'];
-        this.rerenderLog();
+        this.renderLog();
         // 입력창 비활성화.
         $userInput.disabled = true;
         return;
@@ -76,7 +76,7 @@ export default class GamePlayView {
         ...this.#log,
         result === Status.UP ? '[컴퓨터] 업!' : '[컴퓨터] 다운!',
       ];
-      this.rerenderLog();
+      this.renderLog();
     });
 
     $restartButton.addEventListener('click', (e) => {
@@ -84,18 +84,18 @@ export default class GamePlayView {
     });
   }
 
-  rerenderLog() {
+  renderLog() {
     const $logContainer = document.querySelector('.log');
     $logContainer.innerHTML = this.#log.join('<br>');
     $logContainer.scrollTop = $logContainer.scrollHeight;
   }
 
-  rerenderRemainChance() {
+  renderRemainChance() {
     const $remainChance = document.querySelector('.remain_chance');
     $remainChance.innerHTML = `남은 횟수: ${this.#game.chance - this.#game.attemptCount}`;
   }
 
-  rerenderInputLog() {
+  renderInputLog() {
     const $inputLogContainer = document.querySelector('.input_log');
     $inputLogContainer.innerHTML = `현재까지 입력: ${this.#game.guessLog.join(' ')}`;
   }
