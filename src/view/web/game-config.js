@@ -3,12 +3,13 @@ import Game from '../../domain/game';
 
 export default class GameConfigView {
   template = /*html*/ `
-    <p>게임 설정</p>
+    <h3>[게임 설정]</h3>
     <p>숫자 범위</p>
 
     <form class="game_config_form">
-        <input type="number" name="min" />
-        <input type="number" name="max" />
+        <input type="number" name="min" placeholder="최소 값" />
+        <span>~</span>
+        <input type="number" name="max" placeholder="최대 값" />
 
         <p>실행 가능 횟수</p>
         <input type="number" name="chance" />
