@@ -31,6 +31,10 @@ export default class Game {
     return userInputNumber < this.#answer ? Status.UP : Status.DOWN;
   }
 
+  checkIsGameOver() {
+    return this.attemptCount >= this.chance;
+  }
+
   get attemptCount() {
     return this.#attemptCount;
   }
