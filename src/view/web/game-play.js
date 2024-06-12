@@ -64,7 +64,7 @@ export default class GamePlayView {
       }
 
       //이 때! 정답이 아니면 게임이 실패한 것임
-      if (this.#game.attemptCount >= this.#game.chance) {
+      if (this.#game.checkIsGameOver()) {
         this.#log = [...this.#log, '[컴퓨터] 기회를 모두 소진했습니다. 끝! 💣'];
         this.renderLog();
         // 입력창 비활성화.
